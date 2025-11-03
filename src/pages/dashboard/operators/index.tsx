@@ -1,10 +1,7 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -30,15 +27,9 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { operators } from "@/pages/mocks/operators.mock";
+import { operators } from "@/mocks/operators.mock";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Check,
-  MoreHorizontal,
-  Pencil,
-  Trash,
-  X
-} from "lucide-react";
+import { Check, MoreHorizontal, Pencil, Trash, X } from "lucide-react";
 import { useState } from "react";
 
 const OperatorsScrren = () => {

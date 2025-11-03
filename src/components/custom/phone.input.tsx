@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { countries } from "@/pages/mocks/utils.mock";
+import { countries } from "@/mocks/utils.mock";
 
 export function PhoneInput() {
   const [selectedCountry, setSelectedCountry] = useState(countries[0]);

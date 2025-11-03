@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { categories } from "@/pages/mocks/categories.mock";
+import { categories } from "@/mocks/categories.mock";
 import { AnimatePresence, motion } from "framer-motion";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";

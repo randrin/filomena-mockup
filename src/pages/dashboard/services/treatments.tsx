@@ -35,10 +35,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { AnimatePresence, motion } from "framer-motion";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
-import { treatments } from "@/pages/mocks/treatments.mock";
-import { TreatmentType } from "@/pages/types/treatment.type";
-import { CategoryType } from "@/pages/types/category.type";
-import { categories } from "@/pages/mocks/categories.mock";
+import { treatments } from "@/mocks/treatments.mock";
+import { TreatmentType } from "@/types/treatment.type";
+import { CategoryType } from "@/types/category.type";
+import { categories } from "@/mocks/categories.mock";
 import { Card, CardContent } from "@/components/ui/card";
 
 const TreatmentsServicesScreen = () => {

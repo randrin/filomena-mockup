@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table";
-import { customers } from "@/pages/mocks/customers.mock";
-import { CustomerType } from "@/pages/types/customer.type";
+import { customers } from "@/mocks/customers.mock";
+import { CustomerType } from "@/types/customer.type";
 import React from "react";
 
 const ClientsScreen = () => {

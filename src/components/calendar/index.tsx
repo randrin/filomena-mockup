@@ -40,11 +40,11 @@ import { it } from "date-fns/locale"; // 🇮🇹 Importa la lingua italiana
 
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { operators } from "@/pages/mocks/operators.mock";
-import { treatments } from "@/pages/mocks/treatments.mock";
-import { AppointmentType } from "@/pages/types/appointment.type";
-import { OperatorType } from "@/pages/types/operator.type";
-import { TreatmentType } from "@/pages/types/treatment.type";
+import { operators } from "@/mocks/operators.mock";
+import { treatments } from "@/mocks/treatments.mock";
+import { AppointmentType } from "@/types/appointment.type";
+import { OperatorType } from "@/types/operator.type";
+import { TreatmentType } from "@/types/treatment.type";
 import {
   ArrowLeft,
   ArrowRight,
