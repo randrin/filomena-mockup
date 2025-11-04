@@ -136,7 +136,7 @@ const ClientsScreen = () => {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Preferenza
+              Preferenza contatto
             </p>
             <Badge variant={"secondary"}>{customer?.preference}</Badge>
           </div>

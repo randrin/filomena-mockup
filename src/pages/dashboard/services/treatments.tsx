@@ -33,73 +33,134 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { AnimatePresence, motion } from "framer-motion";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
-import { useState } from "react";
+import {
+  Activity,
+  MoreHorizontal,
+  Pencil,
+  PlusIcon,
+  Trash,
+  X
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { treatments } from "@/mocks/treatments.mock";
 import { TreatmentType } from "@/types/treatment.type";
 import { CategoryType } from "@/types/category.type";
 import { categories } from "@/mocks/categories.mock";
 import { Card, CardContent } from "@/components/ui/card";
+import { ModeType } from "@/types/util.type";
+import DialogModal from "@/components/custom/dialog.modal";
+import ToastMessage from "@/components/custom/toast.message";
+import { Switch } from "@/components/ui/switch";
 
 const TreatmentsServicesScreen = () => {
-  const [openAction, setOpenAction] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [mode, setMode] = useState<ModeType>("add");
+  const [treatment, setTreatment] = useState<TreatmentType>(
+    {} as TreatmentType
+  );
+  const [openRow, setOpenRow] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const actionCell = () => {
+  useEffect(() => {
+    // TODO: Fetch operators from API
+  }, []);
+
+  // Desctructure
+  const { category, name, duration, price, status, notes, bodyPart } =
+    treatment;
+
+  // Action cell for each treatment row
+  const actionCell = (treatmentId: string) => {
     return (
       <TableCell className="text-right">
-        <DropdownMenu open={openAction} onOpenChange={setOpenAction}>
+        <DropdownMenu
+          open={openRow === treatmentId}
+          onOpenChange={(open) => setOpenRow(open ? treatmentId : null)}
+        >
           <DropdownMenuTrigger asChild>
-            <div
-              onMouseEnter={() => setOpenAction(true)}
-              onMouseLeave={() => setOpenAction(false)}
-              className="cursor-pointer"
-            >
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
           </DropdownMenuTrigger>
 
-          <AnimatePresence>
-            {openAction && (
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuContent
-                  align="end"
-                  asChild
-                  onMouseEnter={() => setOpenAction(true)}
-                  onMouseLeave={() => setOpenAction(false)}
-                  className="w-48"
+          {/* Keep DropdownMenuContent mounted so Radix can control focus */}
+          <DropdownMenuContent align="end" className="w-4">
+            <AnimatePresence>
+              {openRow === treatmentId && (
+                <motion.div
+                  key="menu"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
                 >
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setMode("edit");
+                      setIsDialogOpen(!isDialogOpen);
+                      setTreatment(
+                        treatments.find(
+                          (t) => t.id === treatmentId
+                        ) as TreatmentType
+                      );
+                    }}
                   >
-                    <DropdownMenuItem
-                      onClick={() => console.log("Edit clicked")}
-                    >
-                      <Pencil className="h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => console.log("Delete clicked")}
-                      className="text-red-600"
-                    >
-                      <Trash className="h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                  </motion.div>
-                </DropdownMenuContent>
-              </DropdownMenuContent>
-            )}
-          </AnimatePresence>
+                    <Pencil className="h-4 w-4 mr-2" /> Modifica
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setMode("edit");
+                      setIsModalOpen(!isModalOpen);
+                      setTreatment(
+                        treatments.find(
+                          (op) => op.id === treatmentId
+                        ) as TreatmentType
+                      );
+                    }}
+                    className="text-red-600"
+                  >
+                    <Trash className="h-4 w-4 mr-2" /> Elimina
+                  </DropdownMenuItem>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
     );
   };
 
   const handleSave = () => {
-    //setIsDialogOpen(false);
+    // TODO: Save trattamento logic
+    setIsDialogOpen(!isDialogOpen);
+    ToastMessage({
+      message: "Trattamento salvato con successo."
+    });
+  };
+
+  const handleUpdate = () => {
+    // TODO: Update trattamento logic
+    setIsDialogOpen(!isDialogOpen);
+    ToastMessage({
+      message: "Trattamento aggiornato con successo."
+    });
+  };
+
+  const handleDisabled = () => {
+    return (
+      !!category?.length &&
+      !!name?.length &&
+      !!bodyPart?.length &&
+      duration !== undefined
+    );
+  };
+
+  const handleDelete = () => {
+    // TODO: Delete trattamento logic
+    setIsModalOpen(!isModalOpen);
+    ToastMessage({
+      message: "Trattamento cancellato con successo."
+    });
   };
 
   return (
@@ -107,16 +168,20 @@ const TreatmentsServicesScreen = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 gap-2">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Treatments</h1>
-            <span>Manage treatments for booking and statuses</span>
+            <h1 className="text-2xl font-bold mb-2">Trattamenti</h1>
+            <span>Gestisci i trattamenti per prenotazione e stati.</span>
           </div>
 
           <Button
-            variant="outline"
+            variant="default"
             className="w-40"
-            onClick={() => setIsDialogOpen(!isDialogOpen)}
+            onClick={() => {
+              setMode("add");
+              setIsDialogOpen(!isDialogOpen);
+              setTreatment({} as TreatmentType);
+            }}
           >
-            ➕ Add Treatment
+            <PlusIcon /> Trattamento
           </Button>
         </div>
 
@@ -125,13 +190,14 @@ const TreatmentsServicesScreen = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Duration (min)</TableHead>
-                  <TableHead>Price (€)</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead>Codice</TableHead>
+                  <TableHead>Nome</TableHead>
+                  <TableHead>Categoria</TableHead>
+                  <TableHead>Parte del corpo</TableHead>
+                  <TableHead>Durata (min)</TableHead>
+                  <TableHead>Prezzo (€)</TableHead>
+                  <TableHead>Stato</TableHead>
+                  <TableHead className="text-right">Azione</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -145,6 +211,9 @@ const TreatmentsServicesScreen = () => {
                     </TableCell>
                     <TableCell className="font-medium">
                       {treatment.category}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {treatment.bodyPart}
                     </TableCell>
                     <TableCell className="font-medium">
                       {treatment.duration}
@@ -163,7 +232,7 @@ const TreatmentsServicesScreen = () => {
                         {treatment.status}
                       </Badge>
                     </TableCell>
-                    {actionCell()}
+                    {actionCell(treatment.id)}
                   </TableRow>
                 ))}
               </TableBody>
@@ -171,52 +240,117 @@ const TreatmentsServicesScreen = () => {
           </CardContent>
         </Card>
 
-        {/* Dialog */}
+        {/* Dialog Modal add/edit trattamento */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent style={{ padding: "12px" }}>
             <DialogHeader>
-              <DialogTitle>{"Treatment "}</DialogTitle>
+              <DialogTitle>
+                {mode === "edit" ? "Modifica Trattamento" : "Nuovo Trattamento"}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="category">Category</Label>
-                <Select>
+                <Label htmlFor="category">Categoria</Label>
+                <Select
+                  name="category"
+                  value={category ?? ""}
+                  onValueChange={(e) =>
+                    setTreatment({ ...treatment!, category: e })
+                  }
+                >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose a category..." />
+                    <SelectValue placeholder="Seleziona una categoria" />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category: CategoryType) => (
                       <SelectItem key={category.id} value={category.name}>
-                        {category.name}
+                        {category.id} - {category.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="name">Name</Label>
-                <Input type="text" placeholder="Treatment name" />
+                <Label htmlFor="name">Nome</Label>
+                <Input
+                  type="text"
+                  name="name"
+                  value={name || ""}
+                  placeholder="Inserisci il nome"
+                  onChange={(e) =>
+                    setTreatment({ ...treatment!, name: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <Label htmlFor="body">Parte of the body</Label>
-                <Input type="text" placeholder="Interessed body part" />
+                <Label htmlFor="body">Parti del corpo interessato</Label>
+                <Input
+                  type="text"
+                  name="phone"
+                  value={bodyPart ?? ""}
+                  placeholder="Inserisci le parti"
+                  onChange={(e) =>
+                    setTreatment({ ...treatment!, bodyPart: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="status">Stato</Label>
+                <br />
+                <Switch
+                  name="status"
+                  checked={status === "Active"}
+                  onCheckedChange={(val) =>
+                    setTreatment({
+                      ...treatment!,
+                      status: val ? "Active" : "Inactive"
+                    })
+                  }
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="duration">Duration (minutes)</Label>
-                  <Input type="number" placeholder="Duration in minutes" />
+                  <Label htmlFor="duration">Durata (minuti)</Label>
+                  <Input
+                    type="number"
+                    name="duration"
+                    value={duration ?? ""}
+                    onChange={(e) =>
+                      setTreatment({
+                        ...treatment!,
+                        duration: Number(e.target.value)
+                      })
+                    }
+                    placeholder="Durata in minuti"
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="price">Price (€)</Label>
-                  <Input type="number" placeholder="Price in €" />
+                  <Label htmlFor="price">Prezzo (€)</Label>
+                  <Input
+                    type="number"
+                    name="price"
+                    value={price ?? ""}
+                    onChange={(e) =>
+                      setTreatment({
+                        ...treatment!,
+                        price: Number(e.target.value)
+                      })
+                    }
+                    placeholder="Prezzo in €"
+                  />
                 </div>
               </div>
               <div>
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Commenti</Label>
                 <Textarea
                   id="message"
-                  placeholder="Type your message here..."
+                  name="notes"
+                  value={notes ?? ""}
+                  placeholder="Inserisci qui i tuoi appunti..."
                   className="min-h-[100px]"
+                  onChange={(e) =>
+                    setTreatment({ ...treatment!, notes: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -227,14 +361,37 @@ const TreatmentsServicesScreen = () => {
                 className="w-[100px] mr-3"
                 onClick={() => setIsDialogOpen(false)}
               >
-                Cancel
+                <X />
+                Cancella
               </Button>
-              <Button onClick={handleSave} className="w-[100px]">
-                Save
+              <Button
+                onClick={mode === "edit" ? handleUpdate : handleSave}
+                disabled={!handleDisabled()}
+                className="w-[100px]"
+              >
+                {mode === "edit" ? (
+                  <span className="flex items-center">
+                    <Pencil className="mr-2" /> Modifica
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <Activity className="mr-2" /> Salva
+                  </span>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Modal delete trattamento */}
+        <DialogModal
+          title="Sei assolutamente sicuro?"
+          description="Questa azione non può essere annullata. Il trattamento verrà eliminato definitivamente."
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          position="top"
+          onConfirm={handleDelete}
+        />
       </div>
     </DashboardLayout>
   );

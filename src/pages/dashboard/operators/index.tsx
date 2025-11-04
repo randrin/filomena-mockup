@@ -47,7 +47,7 @@ import { useEffect, useState } from "react";
 
 const OperatorsScreen = () => {
   const [mode, setMode] = useState<ModeType>("add");
-  const [operator, setOperator] = useState<OperatorType | null>(null);
+  const [operator, setOperator] = useState<OperatorType>({} as OperatorType);
   const [openRow, setOpenRow] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -57,8 +57,8 @@ const OperatorsScreen = () => {
   }, []);
 
   // Desctructure
-  const { firstName, lastName, email, phone, preferred, unqualified, notes } =
-    operator || {};
+  const { firstName, lastName, email, phone, status, preferred, unqualified, notes } =
+    operator;
 
   // Action cell for each operator
   const actionCell = (operatorId: string) => {
@@ -90,7 +90,9 @@ const OperatorsScreen = () => {
                       setMode("edit");
                       setIsDialogOpen(!isDialogOpen);
                       setOperator(
-                        operators.find((op) => op.id === operatorId) || null
+                        operators.find(
+                          (op) => op.id === operatorId
+                        ) as OperatorType
                       );
                     }}
                   >
@@ -101,7 +103,9 @@ const OperatorsScreen = () => {
                       setMode("edit");
                       setIsModalOpen(!isModalOpen);
                       setOperator(
-                        operators.find((op) => op.id === operatorId) || null
+                        operators.find(
+                          (op) => op.id === operatorId
+                        ) as OperatorType
                       );
                     }}
                     className="text-red-600"
@@ -165,7 +169,7 @@ const OperatorsScreen = () => {
             onClick={() => {
               setMode("add");
               setIsDialogOpen(!isDialogOpen);
-              setOperator(null);
+              setOperator({} as OperatorType);
             }}
           >
             <PlusIcon /> Operatore
@@ -299,7 +303,7 @@ const OperatorsScreen = () => {
                 <br />
                 <Switch
                   name="status"
-                  checked={operator?.status === "Active"}
+                  checked={status === "Active"}
                   onCheckedChange={(val) =>
                     setOperator({
                       ...operator!,

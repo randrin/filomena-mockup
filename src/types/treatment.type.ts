@@ -5,4 +5,6 @@ export type TreatmentType = {
   price?: number;
   category: string;
   status: "Active" | "Inactive";
+  bodyPart: string;
+  notes?: string;
 };
