@@ -18,8 +18,8 @@ const Header = () => {
   const router = useRouter();
 
   return (
-    <header className="flex items-center justify-between border-b bg-background px-6 py-3">
-      <h1 className="text-xl font-semibold">Dashboard</h1>
+    <header className="flex items-center justify-end border-b bg-background px-6 py-3">
+      {/* <h1 className="text-xl font-semibold">Dashboard</h1> */}
 
       <div className="flex items-center gap-3">
         {/* <Button variant="outline" size="sm">

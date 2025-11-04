@@ -1,4 +1,5 @@
 import DialogModal from "@/components/custom/dialog.modal";
+import ToastMessage from "@/components/custom/toast.message";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const OperatorsScrren = () => {
+const OperatorsScreen = () => {
   const [mode, setMode] = useState<ModeType>("add");
   const [operator, setOperator] = useState<OperatorType | null>(null);
   const [openRow, setOpenRow] = useState<string | null>(null);
@@ -119,6 +120,17 @@ const OperatorsScrren = () => {
   const handleSave = () => {
     // TODO: Save operator logic
     setIsDialogOpen(!isDialogOpen);
+    ToastMessage({
+      message: "Operatore salvato con successo."
+    });
+  };
+
+  const handleUpdate = () => {
+    // TODO: Update operator logic
+    setIsDialogOpen(!isDialogOpen);
+    ToastMessage({
+      message: "Operatore aggiornato con successo."
+    });
   };
 
   const handleDisabled = () => {
@@ -133,6 +145,9 @@ const OperatorsScrren = () => {
   const handleDelete = () => {
     // TODO: Delete operator logic
     setIsModalOpen(!isModalOpen);
+    ToastMessage({
+      message: "Operatore cancellato con successo."
+    });
   };
 
   return (
@@ -162,7 +177,7 @@ const OperatorsScrren = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
+                  <TableHead>Codice</TableHead>
                   <TableHead>Nome e cognome</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Telefono</TableHead>
@@ -280,10 +295,10 @@ const OperatorsScrren = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="status">Stato</Label><br />
+                <Label htmlFor="status">Stato</Label>
+                <br />
                 <Switch
                   name="status"
-                  
                   checked={operator?.status === "Active"}
                   onCheckedChange={(val) =>
                     setOperator({
@@ -383,11 +398,19 @@ const OperatorsScrren = () => {
                 Cancella
               </Button>
               <Button
-                onClick={handleSave}
+                onClick={mode === "edit" ? handleUpdate : handleSave}
                 disabled={!handleDisabled()}
                 className="w-[100px]"
               >
-                <UserRoundPlus /> Salva
+                {mode === "edit" ? (
+                  <span className="flex items-center">
+                    <Pencil className="mr-2" /> Modifica
+                  </span>
+                ) : (
+                  <span className="flex items-center">
+                    <UserRoundPlus className="mr-2" /> Salva
+                  </span>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -395,7 +418,7 @@ const OperatorsScrren = () => {
 
         {/* Modal delete operator */}
         <DialogModal
-          title="ASei assolutamente sicuro?"
+          title="Sei assolutamente sicuro?"
           description="Questa azione non può essere annullata. L'operatore verrà eliminato definitivamente."
           isOpen={isModalOpen}
           setIsOpen={setIsModalOpen}
@@ -407,4 +430,4 @@ const OperatorsScrren = () => {
   );
 };
 
-export default OperatorsScrren;
+export default OperatorsScreen;

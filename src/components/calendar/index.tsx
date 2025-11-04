@@ -362,7 +362,7 @@ export default function CalendarScreen() {
         <DialogContent style={{ padding: "12px" }}>
           <DialogHeader>
             <DialogTitle>
-              {mode === "edit" ? "Edit Appointment" : "New Appointment"}
+              {mode === "edit" ? "Modifica Appuntamento" : "Nuovo Appuntamento"}
             </DialogTitle>
           </DialogHeader>
 
@@ -594,7 +594,7 @@ export default function CalendarScreen() {
         </DialogContent>
       </Dialog>
 
-      {/* Drawer */}
+      {/* Drawer per visualizzare il dettaglio dell'appuntamento */}
       <DrawerInput
         open={openDrawer}
         setOpen={setOpenDrawer}
