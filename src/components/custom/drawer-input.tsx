@@ -6,7 +6,7 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { XIcon } from "lucide-react";
+import { X, XIcon } from "lucide-react";
 
 interface DrawerProps {
   open: boolean;
@@ -39,7 +39,9 @@ const DrawerInput = ({
         </DrawerHeader>
         {children}
         <DrawerFooter>
-          <Button onClick={() => setOpen(false)}>Close</Button>
+          <Button onClick={() => setOpen(false)}>
+            <X /> Chuidi
+          </Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

@@ -20,20 +20,20 @@ const navItems = [
     icon: Home
   },
   {
-    name: "Services",
+    name: "Servizi",
     icon: LayoutDashboard,
     children: [
-      { name: "Treatments", href: "/dashboard/services/treatments" },
-      { name: "Categories", href: "/dashboard/services/categories" }
+      { name: "Trattamenti", href: "/dashboard/services/treatments" },
+      { name: "Categorie", href: "/dashboard/services/categories" }
     ]
   },
   {
-    name: "Clients",
+    name: "Clienti",
     href: "/dashboard/clients",
     icon: User
   },
   {
-    name: "Operators",
+    name: "Operatori",
     icon: UserRoundCog,
     href: "/dashboard/operators"
   }

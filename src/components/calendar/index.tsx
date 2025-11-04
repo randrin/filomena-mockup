@@ -45,12 +45,16 @@ import { treatments } from "@/mocks/treatments.mock";
 import { AppointmentType } from "@/types/appointment.type";
 import { OperatorType } from "@/types/operator.type";
 import { TreatmentType } from "@/types/treatment.type";
+import { ModeType } from "@/types/util.type";
+import { capitalizeFirstLetter } from "@/utils/common.utils";
 import {
   ArrowLeft,
   ArrowRight,
   CalendarDays,
   Calendar as CalendarIcon,
   Eye,
+  PlusIcon,
+  Undo2,
   X
 } from "lucide-react";
 import { JSX, useEffect, useState } from "react";
@@ -86,6 +90,7 @@ export default function CalendarScreen() {
   const [duration, setDuration] = useState<string | null>(null);
   const [showAppointment, setShowAppointment] =
     useState<showAppointmentType | null>(null);
+  const [mode, setMode] = useState<ModeType>("add");
 
   const today = new Date();
 
@@ -132,8 +137,10 @@ export default function CalendarScreen() {
   const openDialog = (date?: Date, appt?: Appointment) => {
     if (appt) {
       // editing existing appt -> use appt data
+      setMode("edit");
       setCurrentAppointment(appt);
     } else {
+      setMode("add");
       const today = date ?? new Date();
       // new appt -> create with provided date
       setCurrentAppointment({
@@ -276,7 +283,7 @@ export default function CalendarScreen() {
       );
     }
 
-    return <div className="space-y-1 my-3">{rows}</div>;
+    return <div className="space-y-1 m-4">{rows}</div>;
   };
 
   const handleDisabled = () => {
@@ -319,27 +326,30 @@ export default function CalendarScreen() {
       <div className="flex justify-between items-center mb-4 gap-2">
         <div className="flex gap-2">
           <Button variant="outline" className="w-35" onClick={prevMonth}>
-            <ArrowLeft /> Previous
+            <ArrowLeft /> Precedente
           </Button>
           <Button variant="outline" className="w-40" onClick={currentMonthView}>
-            <CalendarDays /> Current Month
+            <CalendarDays />
+            Mese corrente
           </Button>{" "}
           {/* ← bouton */}
           <Button variant="outline" className="w-35" onClick={nextMonth}>
-            Next <ArrowRight />
+            Prossimo <ArrowRight />
           </Button>
         </div>
         <h1 className="text-2xl font-semibold text-center flex-1">
-          {format(currentMonth, "MMMM yyyy")}
+          {capitalizeFirstLetter(
+            format(currentMonth, "MMMM yyyy", { locale: it })
+          )}
         </h1>
         <Button variant="default" className="w-40" onClick={() => openDialog()}>
-          ➕ Add Appointment
+          <PlusIcon /> Prenotazione
         </Button>
       </div>
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-2 mt-3 text-center font-medium text-gray-600">
-        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
+        {["Lun", "Mar", "Mer", "Gio", "ven", "Sab", "Dom"].map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
@@ -352,20 +362,16 @@ export default function CalendarScreen() {
         <DialogContent style={{ padding: "12px" }}>
           <DialogHeader>
             <DialogTitle>
-              {currentAppointment
-                ? !!currentAppointment.title.length
-                  ? "Edit Appointment"
-                  : "New Appointment"
-                : "Appointment"}
+              {mode === "edit" ? "Edit Appointment" : "New Appointment"}
             </DialogTitle>
           </DialogHeader>
 
           {currentAppointment && (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Titolo</Label>
                 <Input
-                  placeholder="Appointment title"
+                  placeholder="Titolo dell'appuntamento"
                   value={currentAppointment.title}
                   onChange={(e) =>
                     setCurrentAppointment({
@@ -378,7 +384,7 @@ export default function CalendarScreen() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="date">Date</Label>
+                  <Label htmlFor="date">Data</Label>
                   <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -394,7 +400,7 @@ export default function CalendarScreen() {
                             locale: it
                           })
                         ) : (
-                          <span>Pick date</span>
+                          <span>Seleziona una data</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -429,14 +435,14 @@ export default function CalendarScreen() {
                           onClick={handleToday}
                           className="text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                         >
-                          Today
+                          Oggi
                         </Button>
                       </div>
                     </PopoverContent>
                   </Popover>
                 </div>
                 <div>
-                  <Label htmlFor="time">Time</Label>
+                  <Label htmlFor="time">Fascia oraria</Label>
                   <Select
                     value={currentAppointment.time}
                     onValueChange={(val) =>
@@ -447,7 +453,7 @@ export default function CalendarScreen() {
                     }
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose an time" />
+                      <SelectValue placeholder="Seleziona un orario" />
                     </SelectTrigger>
                     <SelectContent>
                       {times.map((t) => (
@@ -468,7 +474,7 @@ export default function CalendarScreen() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="duration">Duration</Label>
+                  <Label htmlFor="duration">Durata</Label>
                   <Select
                     value={currentAppointment.duration}
                     onValueChange={(val) =>
@@ -479,7 +485,7 @@ export default function CalendarScreen() {
                     }
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Choose an duration" />
+                      <SelectValue placeholder="Seleziona una durata" />
                     </SelectTrigger>
                     <SelectContent>
                       {durations.map((d) => (
@@ -500,37 +506,8 @@ export default function CalendarScreen() {
                 </div>
               </div>
 
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="date">Date</Label>
-                  <Input
-                    type="date"
-                    value={currentAppointment.date}
-                    onChange={(e) =>
-                      setCurrentAppointment({
-                        ...currentAppointment,
-                        date: e.target.value
-                      })
-                    }
-                    disabled={!!currentAppointment.title.length} // disable date change when editing existing appt
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="time">Time</Label>
-                  <Input
-                    type="time"
-                    value={currentAppointment.time}
-                    onChange={(e) =>
-                      setCurrentAppointment({
-                        ...currentAppointment,
-                        time: e.target.value
-                      })
-                    }
-                  />
-                </div>
-              </div> */}
               <div>
-                <Label htmlFor="treatment">Treatment</Label>
+                <Label htmlFor="treatment">Trattamento</Label>
                 <Select
                   value={currentAppointment.treatmentId}
                   onValueChange={(val) =>
@@ -541,7 +518,7 @@ export default function CalendarScreen() {
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose a treatment..." />
+                    <SelectValue placeholder="Seleziona un trattamento" />
                   </SelectTrigger>
                   <SelectContent>
                     {treatments
@@ -555,7 +532,7 @@ export default function CalendarScreen() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="operator">Operator</Label>
+                <Label htmlFor="operator">Operatore</Label>
                 <Select
                   value={currentAppointment.operatorId}
                   onValueChange={(val) =>
@@ -566,7 +543,7 @@ export default function CalendarScreen() {
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Choose an operator..." />
+                    <SelectValue placeholder="Seleziona un operatore" />
                   </SelectTrigger>
                   <SelectContent>
                     {operators
@@ -581,10 +558,10 @@ export default function CalendarScreen() {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Commenti</Label>
                 <Textarea
                   id="message"
-                  placeholder="Type your notes here..."
+                  placeholder="Inserisci qui i tuoi appunti..."
                   className="min-h-[100px]"
                   value={currentAppointment.notes}
                   onChange={(e) =>
@@ -604,14 +581,14 @@ export default function CalendarScreen() {
               className="w-[100px] mr-3"
               onClick={() => setIsDialogOpen(false)}
             >
-              Cancel
+               <Undo2 /> Cancella
             </Button>
             <Button
               disabled={handleDisabled()}
               onClick={handleSave}
               className="w-[100px]"
             >
-              Save
+              <CalendarDays /> Prenota
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -622,12 +599,12 @@ export default function CalendarScreen() {
         open={openDrawer}
         setOpen={setOpenDrawer}
         position="right"
-        title="Appointment Details"
+        title="Dettaglio Appuntamento"
       >
         <div className="m-4 flex flex-col gap-4">
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Title
+              Titolo
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.appointment.title}
@@ -635,7 +612,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Date
+              Data
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.appointment.date}
@@ -643,7 +620,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Time
+              Fascia oraria
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.appointment.time}
@@ -651,7 +628,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Duration
+              Durata
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.appointment.duration} min
@@ -659,7 +636,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Treatment
+              Trattamento
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.treatment.id} -{" "}
@@ -668,7 +645,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Operator
+              Operatore
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.operator.id} -{" "}
@@ -678,7 +655,7 @@ export default function CalendarScreen() {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Notes
+              Commenti
             </p>
             <p className="text-lg font-medium">
               {showAppointment?.appointment.notes}

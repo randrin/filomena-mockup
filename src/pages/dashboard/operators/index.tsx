@@ -1,3 +1,4 @@
+import DialogModal from "@/components/custom/dialog.modal";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -28,69 +30,109 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { operators } from "@/mocks/operators.mock";
+import { OperatorType } from "@/types/operator.type";
+import { ModeType } from "@/types/util.type";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, MoreHorizontal, Pencil, Trash, X } from "lucide-react";
-import { useState } from "react";
+import {
+  Check,
+  MoreHorizontal,
+  Pencil,
+  PlusIcon,
+  Trash,
+  UserRoundPlus,
+  X
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 const OperatorsScrren = () => {
-  const [openAction, setOpenAction] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [mode, setMode] = useState<ModeType>("add");
+  const [operator, setOperator] = useState<OperatorType | null>(null);
+  const [openRow, setOpenRow] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const actionCell = () => {
+  useEffect(() => {
+    // TODO: Fetch operators from API
+  }, []);
+
+  // Desctructure
+  const { firstName, lastName, email, phone, preferred, unqualified, notes } =
+    operator || {};
+
+  // Action cell for each operator
+  const actionCell = (operatorId: string) => {
     return (
       <TableCell className="text-right">
-        <DropdownMenu open={openAction} onOpenChange={setOpenAction}>
+        <DropdownMenu
+          open={openRow === operatorId}
+          onOpenChange={(open) => setOpenRow(open ? operatorId : null)}
+        >
           <DropdownMenuTrigger asChild>
-            <div
-              onMouseEnter={() => setOpenAction(true)}
-              onMouseLeave={() => setOpenAction(false)}
-              className="cursor-pointer"
-            >
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
           </DropdownMenuTrigger>
 
-          <AnimatePresence>
-            {openAction && (
-              <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuContent
-                  align="end"
-                  asChild
-                  onMouseEnter={() => setOpenAction(true)}
-                  onMouseLeave={() => setOpenAction(false)}
-                  className="w-48"
+          {/* Keep DropdownMenuContent mounted so Radix can control focus */}
+          <DropdownMenuContent align="end" className="w-4">
+            <AnimatePresence>
+              {openRow === operatorId && (
+                <motion.div
+                  key="menu"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
                 >
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setMode("edit");
+                      setIsDialogOpen(!isDialogOpen);
+                      setOperator(
+                        operators.find((op) => op.id === operatorId) || null
+                      );
+                    }}
                   >
-                    <DropdownMenuItem
-                      onClick={() => console.log("Edit clicked")}
-                    >
-                      <Pencil className="h-4 w-4" /> Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => console.log("Delete clicked")}
-                      className="text-red-600"
-                    >
-                      <Trash className="h-4 w-4" /> Delete
-                    </DropdownMenuItem>
-                  </motion.div>
-                </DropdownMenuContent>
-              </DropdownMenuContent>
-            )}
-          </AnimatePresence>
+                    <Pencil className="h-4 w-4 mr-2" /> Modifica
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setMode("edit");
+                      setIsModalOpen(!isModalOpen);
+                      setOperator(
+                        operators.find((op) => op.id === operatorId) || null
+                      );
+                    }}
+                    className="text-red-600"
+                  >
+                    <Trash className="h-4 w-4 mr-2" /> Elimina
+                  </DropdownMenuItem>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
     );
   };
 
   const handleSave = () => {
-    //setIsDialogOpen(false);
+    // TODO: Save operator logic
+    setIsDialogOpen(!isDialogOpen);
+  };
+
+  const handleDisabled = () => {
+    return (
+      !!firstName?.length &&
+      !!lastName?.length &&
+      preferred !== undefined &&
+      unqualified !== undefined
+    );
+  };
+
+  const handleDelete = () => {
+    // TODO: Delete operator logic
+    setIsModalOpen(!isModalOpen);
   };
 
   return (
@@ -98,16 +140,20 @@ const OperatorsScrren = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 gap-2">
           <div>
-            <h1 className="text-2xl font-bold mb-2">Operators</h1>
-            <span>Manage your operators and their statuses.</span>
+            <h1 className="text-2xl font-bold mb-2">Operatori</h1>
+            <span>Gestisci i tuoi operatori e i loro stati.</span>
           </div>
 
           <Button
-            variant="outline"
+            variant="default"
             className="w-40"
-            onClick={() => setIsDialogOpen(!isDialogOpen)}
+            onClick={() => {
+              setMode("add");
+              setIsDialogOpen(!isDialogOpen);
+              setOperator(null);
+            }}
           >
-            ➕ Add Operator
+            <PlusIcon /> Operatore
           </Button>
         </div>
 
@@ -117,14 +163,14 @@ const OperatorsScrren = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Full Name</TableHead>
+                  <TableHead>Nome e cognome</TableHead>
                   <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Preferred Operator</TableHead>
-                  <TableHead>Unqualified Operator</TableHead>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead>Telefono</TableHead>
+                  <TableHead>Operatrice di preferenza</TableHead>
+                  <TableHead>Operatrice non abilitata</TableHead>
+                  <TableHead>Ordine</TableHead>
+                  <TableHead>Stato</TableHead>
+                  <TableHead className="text-right">Azione</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -166,7 +212,7 @@ const OperatorsScrren = () => {
                         {operator.status}
                       </Badge>
                     </TableCell>
-                    {actionCell()}
+                    {actionCell(operator.id)}
                   </TableRow>
                 ))}
               </TableBody>
@@ -174,39 +220,97 @@ const OperatorsScrren = () => {
           </CardContent>
         </Card>
 
-        {/* Dialog */}
+        {/* Dialog Modal add/edit operator */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent style={{ padding: "12px" }}>
             <DialogHeader>
-              <DialogTitle>{"Operator"}</DialogTitle>
+              <DialogTitle>
+                {mode === "edit" ? "Modifica operatore" : "Nuovo operatore"}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input type="text" placeholder="Enter first name" />
+                  <Label htmlFor="firstName">Nome</Label>
+                  <Input
+                    type="text"
+                    name="firstName"
+                    value={firstName ?? ""}
+                    placeholder="Inserisci il nome"
+                    onChange={(e) =>
+                      setOperator({ ...operator!, firstName: e.target.value })
+                    }
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input type="text" placeholder="Enter last name" />
+                  <Label htmlFor="lastName">Cognome</Label>
+                  <Input
+                    type="text"
+                    name="lastName"
+                    value={lastName ?? ""}
+                    placeholder="Inserisci il cognome"
+                    onChange={(e) =>
+                      setOperator({ ...operator!, lastName: e.target.value })
+                    }
+                  />
                 </div>
               </div>
               <div>
-                <Label htmlFor="email">Email (Optional)</Label>
-                <Input type="email" placeholder="Enter email" />
+                <Label htmlFor="email">Email (Opzionale)</Label>
+                <Input
+                  type="email"
+                  name="email"
+                  value={email ?? ""}
+                  placeholder="Inserisci email"
+                  onChange={(e) =>
+                    setOperator({ ...operator!, email: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <Label htmlFor="price">Phone (Optional)</Label>
-                <Input type="text" placeholder="Enter phone" />
+                <Label htmlFor="phone">Telefono (Opzionale)</Label>
+                <Input
+                  type="text"
+                  name="phone"
+                  value={phone ?? ""}
+                  placeholder="Inserisci il telefono"
+                  onChange={(e) =>
+                    setOperator({ ...operator!, phone: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="status">Stato</Label><br />
+                <Switch
+                  name="status"
+                  
+                  checked={operator?.status === "Active"}
+                  onCheckedChange={(val) =>
+                    setOperator({
+                      ...operator!,
+                      status: val ? "Active" : "Inactive"
+                    })
+                  }
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="preferred">Preferred Operator</Label>
-                  <RadioGroup className="mt-2 flex flex-row gap-6">
+                  <Label htmlFor="preferred">Operatrice di preferenza</Label>
+                  <RadioGroup
+                    name="preferred"
+                    value={String(operator?.preferred)}
+                    onValueChange={(val) =>
+                      setOperator({
+                        ...operator!,
+                        preferred: val === "true"
+                      })
+                    }
+                    className="mt-2 flex flex-row gap-6"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value={"true"} id="preferred-yes" />
                       <Label htmlFor="preferred-yes" className="cursor-pointer">
-                        Yes
+                        Si
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -221,15 +325,25 @@ const OperatorsScrren = () => {
                   </RadioGroup>
                 </div>
                 <div>
-                  <Label htmlFor="unqualified">Unqualified Operator</Label>
-                  <RadioGroup className="mt-2 flex flex-row gap-6">
+                  <Label htmlFor="unqualified">Operatrice non abilitata</Label>
+                  <RadioGroup
+                    name="preferred"
+                    value={String(operator?.unqualified)}
+                    onValueChange={(val) =>
+                      setOperator({
+                        ...operator!,
+                        unqualified: val === "true"
+                      })
+                    }
+                    className="mt-2 flex flex-row gap-6"
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value={"true"} id="unqualified-yes" />
                       <Label
                         htmlFor="unqualified-yes"
                         className="cursor-pointer"
                       >
-                        Yes
+                        Si
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -245,10 +359,15 @@ const OperatorsScrren = () => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="notes">Notes</Label>
+                <Label htmlFor="notes">Commenti</Label>
                 <Textarea
                   id="message"
-                  placeholder="Type your message here..."
+                  name="notes"
+                  value={notes ?? ""}
+                  onChange={(e) =>
+                    setOperator({ ...operator!, notes: e.target.value })
+                  }
+                  placeholder="Inserisci qui i tuoi appunti..."
                   className="min-h-[100px]"
                 />
               </div>
@@ -260,14 +379,29 @@ const OperatorsScrren = () => {
                 className="w-[100px] mr-3"
                 onClick={() => setIsDialogOpen(false)}
               >
-                Cancel
+                <X />
+                Cancella
               </Button>
-              <Button onClick={handleSave} className="w-[100px]">
-                Save
+              <Button
+                onClick={handleSave}
+                disabled={!handleDisabled()}
+                className="w-[100px]"
+              >
+                <UserRoundPlus /> Salva
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Modal delete operator */}
+        <DialogModal
+          title="ASei assolutamente sicuro?"
+          description="Questa azione non può essere annullata. L'operatore verrà eliminato definitivamente."
+          isOpen={isModalOpen}
+          setIsOpen={setIsModalOpen}
+          position="top"
+          onConfirm={handleDelete}
+        />
       </div>
     </DashboardLayout>
   );

@@ -10,8 +10,8 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import { Lock, LogOut, Pencil, User } from "lucide-react";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/ui/theme.toggle";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "@/components/custom/theme.toggle";
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -66,26 +66,26 @@ const Header = () => {
                   <DropdownMenuItem
                     onClick={() => router.push("/dashboard/profile")}
                   >
-                    <User className="h-4 w-4" /> My Profile
+                    <User className="h-4 w-4" /> Mio Profilo
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/dashboard/profile/edit")}
                   >
-                    <Pencil className="h-4 w-4" /> Edit Profile
+                    <Pencil className="h-4 w-4" /> Modifica Profilo
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
                       router.push("/dashboard/profile/change-password")
                     }
                   >
-                    <Lock className="h-4 w-4" /> Change Password
+                    <Lock className="h-4 w-4" /> Cambia Password
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="text-red-600"
                     onClick={() => console.log("Logout")}
                   >
-                    <LogOut className="h-4 w-4" /> Logout
+                    <LogOut className="h-4 w-4" /> Disconnetti
                   </DropdownMenuItem>
                 </motion.div>
               </DropdownMenuContent>
