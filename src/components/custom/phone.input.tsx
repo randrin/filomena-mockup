@@ -40,7 +40,7 @@ export function PhoneInput() {
 
       <Input
         type="tel"
-        placeholder="Phone number"
+        placeholder="Inserisci numero di telefono"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         className="flex-1"

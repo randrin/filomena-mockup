@@ -35,10 +35,10 @@ const ChangePasswordScreen = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 gap-2">
           <div className="w-full">
-            <h1 className="text-2xl font-bold mb-2">Change Password</h1>
+            <h1 className="text-2xl font-bold mb-2">Cambio la tua password</h1>
             <AlertMessage
               type="info"
-              description="For security reasons, you can change your password here."
+              description="Per motivi di sicurezza, puoi modificare la tua password qui."
             />
           </div>
         </div>

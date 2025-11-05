@@ -50,7 +50,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="flex h-full w-64 flex-col border-r">
+    <aside className="hidden lg:flex w-64 flex-col border-r">
       <div className="p-4 text-lg font-bold">Filomena</div>
       <DropdownMenuSeparator />
 
@@ -89,7 +89,7 @@ const Sidebar = () => {
                 className={cn(
                   "flex w-full items-center cursor-pointer justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-primary text-white"
+                    ? "bg-primary text-white dark:bg-muted/40"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >

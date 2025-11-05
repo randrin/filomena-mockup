@@ -1,6 +1,9 @@
+import DialogModal from "@/components/custom/dialog.modal";
+import ToastMessage from "@/components/custom/toast.message";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -32,6 +36,11 @@ import {
   TableRow
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { categories } from "@/mocks/categories.mock";
+import { treatments } from "@/mocks/treatments.mock";
+import { CategoryType } from "@/types/category.type";
+import { TreatmentType } from "@/types/treatment.type";
+import { ModeType } from "@/types/util.type";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
@@ -39,18 +48,9 @@ import {
   Pencil,
   PlusIcon,
   Trash,
-  X
+  Undo2Icon
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { treatments } from "@/mocks/treatments.mock";
-import { TreatmentType } from "@/types/treatment.type";
-import { CategoryType } from "@/types/category.type";
-import { categories } from "@/mocks/categories.mock";
-import { Card, CardContent } from "@/components/ui/card";
-import { ModeType } from "@/types/util.type";
-import DialogModal from "@/components/custom/dialog.modal";
-import ToastMessage from "@/components/custom/toast.message";
-import { Switch } from "@/components/ui/switch";
 
 const TreatmentsServicesScreen = () => {
   const [mode, setMode] = useState<ModeType>("add");
@@ -174,14 +174,13 @@ const TreatmentsServicesScreen = () => {
 
           <Button
             variant="default"
-            className="w-40"
             onClick={() => {
               setMode("add");
               setIsDialogOpen(!isDialogOpen);
               setTreatment({} as TreatmentType);
             }}
           >
-            <PlusIcon /> Trattamento
+            <PlusIcon /> <span className="hidden sm:inline">Trattamento</span>
           </Button>
         </div>
 
@@ -361,8 +360,7 @@ const TreatmentsServicesScreen = () => {
                 className="w-[100px] mr-3"
                 onClick={() => setIsDialogOpen(false)}
               >
-                <X />
-                Cancella
+                <Undo2Icon /> Annulla
               </Button>
               <Button
                 onClick={mode === "edit" ? handleUpdate : handleSave}

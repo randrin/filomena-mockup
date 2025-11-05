@@ -34,7 +34,7 @@ import { CategoryType } from "@/types/category.type";
 import { ModeType } from "@/types/util.type";
 import { dateFromNow } from "@/utils/common.utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { MoreHorizontal, Pencil, PlusIcon, Trash, X } from "lucide-react";
+import { MoreHorizontal, Pencil, PlusIcon, Trash, Undo2Icon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const CategoriesServicesScreen = () => {
@@ -146,14 +146,13 @@ const CategoriesServicesScreen = () => {
           </div>
           <Button
             variant="default"
-            className="w-40"
             onClick={() => {
               setIsDialogOpen(!isDialogOpen);
               setMode("add");
               setCategory({} as CategoryType);
             }}
           >
-            <PlusIcon /> Categoria
+            <PlusIcon /> <span className="hidden sm:inline">Categoria</span>
           </Button>
         </div>
 
@@ -250,7 +249,7 @@ const CategoriesServicesScreen = () => {
                 className="w-[100px] mr-3"
                 onClick={() => setIsDialogOpen(false)}
               >
-                <X /> Cancella
+                <Undo2Icon /> Annulla
               </Button>
               <Button
                 onClick={mode === "edit" ? handleUpdate : handleSave}

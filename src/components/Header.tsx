@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/custom/theme.toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -8,18 +9,23 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
-import { Lock, LogOut, Pencil, User } from "lucide-react";
-import { useState } from "react";
+import { Lock, LogOut, Pencil, TextAlignJustify, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/custom/theme.toggle";
+import { useState } from "react";
+import DrawerInput from "./custom/drawer-input";
 
 const Header = () => {
+  const [showMobileSidebar, setShowMobileSidebar] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
   return (
-    <header className="flex items-center justify-end border-b bg-background px-6 py-3">
-      {/* <h1 className="text-xl font-semibold">Dashboard</h1> */}
+    <header className="flex items-center justify-between lg:justify-end border-b bg-background px-6 py-3">
+      <span className="flex lg:hidden text-xl font-semibold">
+        <TextAlignJustify
+          onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+        />
+      </span>
 
       <div className="flex items-center gap-3">
         {/* <Button variant="outline" size="sm">
@@ -93,6 +99,15 @@ const Header = () => {
           </AnimatePresence>
         </DropdownMenu>
       </div>
+      {/* Drawer per visualizzare il dettaglio dell'appuntamento */}
+      <DrawerInput
+        open={showMobileSidebar}
+        setOpen={setShowMobileSidebar}
+        position="right"
+        title="Filomena"
+      >
+        <div className="m-4 flex flex-col gap-4">Mobile Sidebar</div>
+      </DrawerInput>
     </header>
   );
 };

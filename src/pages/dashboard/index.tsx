@@ -1,4 +1,4 @@
-import Calendar from "@/components/calendar";
+import Calendar from "@/components/dashboard/calendar";
 import DashboardLayout from "@/components/DashboardLayout";
 
 const DashboardScreen = () => {

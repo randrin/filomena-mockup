@@ -1,20 +1,15 @@
-import DashboardLayout from "@/components/DashboardLayout";
-import React, { useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useRouter } from "next/router";
-import { Textarea } from "@/components/ui/textarea";
 import { PhoneInput } from "@/components/custom/phone.input";
+import ToastMessage from "@/components/custom/toast.message";
+import DashboardLayout from "@/components/DashboardLayout";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Undo2Icon, UserCheck, X } from "lucide-react";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 
 type User = {
   firstName: string;
@@ -22,7 +17,13 @@ type User = {
   email: string;
   phone?: string;
   dateOfBirth?: string;
-  address?: string;
+  address?: {
+    line_one?: string;
+    line_two?: string;
+    city: string;
+    zip_code: string;
+    country: string;
+  };
   avatarUrl?: string;
   notes?: string;
 };
@@ -35,10 +36,19 @@ const EditProfileScreen = () => {
     email: "mario.rossi@example.com",
     phone: "+39 06 12 34 56 78",
     dateOfBirth: "1990-05-20",
-    address: "Via Piazza di Spagna, 10, Milan, 20144, Italia",
+    address: {
+      line_one: "Via Piazza di Spagna, 10",
+      city: "Milan",
+      zip_code: "20144",
+      country: "Italia"
+    }, //"Via Piazza di Spagna, 10, Milan, 20144, Italia",
     avatarUrl: "/avatar.jpg", // replace with actual path
     notes: "Experienced operator with a focus on customer satisfaction."
   });
+
+  // Desctructure
+  const { firstName, lastName, avatarUrl, email, phone, address, dateOfBirth, notes } =
+    user;
 
   const handleChange = (field: keyof User, value: string) => {
     setUser((prev) => ({ ...prev, [field]: value }));
@@ -46,8 +56,10 @@ const EditProfileScreen = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("✅ Updated user data:", user);
-    alert("Profile updated!");
+    ToastMessage({
+      message: "Le modifiche al tuo profilo sono state salvate con successo.",
+    })
+    router.push("/dashboard/profile");
   };
 
   return (
@@ -55,8 +67,8 @@ const EditProfileScreen = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 gap-2">
           <div className="w-full">
-            <h1 className="text-2xl font-bold mb-2">Modify Profile</h1>
-            <span>Update your personal details and save changes.</span>
+            <h1 className="text-2xl font-bold mb-2">Modifica Profilo</h1>
+            <span>Aggiorna i tuoi dati personali e salva le modifiche.</span>
           </div>
         </div>
         <Card className="w-full rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
@@ -65,14 +77,14 @@ const EditProfileScreen = () => {
               {/* Avatar */}
               <div className="flex items-center gap-4">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src={user.avatarUrl} alt="Profile Picture" />
+                  <AvatarImage src={avatarUrl} alt="Profile Picture" />
                   <AvatarFallback>
-                    {user.firstName[0]}
-                    {user.lastName[0]}
+                    {firstName[0]}
+                    {lastName[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <Label htmlFor="avatar">Profile Picture</Label>
+                  <Label htmlFor="avatar">Immagine profilo</Label>
                   <Input
                     id="avatar"
                     type="file"
@@ -87,38 +99,42 @@ const EditProfileScreen = () => {
               {/* Two-column grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName">Nome</Label>
                   <Input
                     id="firstName"
-                    value={user.firstName}
-                    placeholder="Enter the value"
+                    name="firstName"
+                    value={firstName}
+                    placeholder="Inserisci nome"
                     onChange={(e) => handleChange("firstName", e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName">Cognome</Label>
                   <Input
                     id="lastName"
-                    value={user.lastName}
-                    placeholder="Enter the value"
+                    name="lastName"
+                    value={lastName}
+                    placeholder="Inserisci cognome"
                     onChange={(e) => handleChange("lastName", e.target.value)}
                   />
                 </div>
-
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Posta elettronica</Label>
                   <Input
                     id="email"
                     type="email"
-                    value={user.email}
-                    placeholder="Enter the value"
+                    name="email"
+                    value={email}
+                    placeholder="Inserisci posta elettronica"
                     onChange={(e) => handleChange("email", e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone">Telefono</Label>
                   <PhoneInput />
                   {/* <Input
                     id="phone"
@@ -127,38 +143,70 @@ const EditProfileScreen = () => {
                     onChange={(e) => handleChange("phone", e.target.value)}
                   /> */}
                 </div>
-
+              </div>
+              <div>
+                <Label htmlFor="dob">Data di nascita</Label>
+                <Input
+                  id="dob"
+                  type="date"
+                  name="dateOfBirth"
+                  value={dateOfBirth}
+                  onChange={(e) => handleChange("dateOfBirth", e.target.value)}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <Label htmlFor="dob">Date of Birth</Label>
+                  <Label htmlFor="line_one">Indirizzo</Label>
                   <Input
-                    id="dob"
-                    type="date"
-                    value={user.dateOfBirth}
-                    onChange={(e) =>
-                      handleChange("dateOfBirth", e.target.value)
-                    }
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <Label htmlFor="address">Address</Label>
-                  <Input
-                    id="address"
-                    value={user.address}
-                    placeholder="Enter the value"
+                    id="line_one"
+                    name="line_one"
+                    value={address?.line_one}
+                    placeholder="Inserisci indirizzo"
                     onChange={(e) => handleChange("address", e.target.value)}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="notes">Notes</Label>
-                  <Textarea
-                    id="message"
-                    placeholder="Type your message here..."
-                    value={user.notes}
-                    onChange={(e) => handleChange("notes", e.target.value)}
-                    className="min-h-[100px]"
+                <div>
+                  <Label htmlFor="zip_code">Codice postale</Label>
+                  <Input
+                    id="zip_code"
+                    name="zip_code"
+                    value={address?.zip_code}
+                    placeholder="Inserisci il codice postale"
+                    onChange={(e) => handleChange("address", e.target.value)}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="city">Città</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    value={address?.city}
+                    placeholder="Inserisci la città"
+                    onChange={(e) => handleChange("address", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="address">Paese</Label>
+                  <Input
+                    id="country"
+                    name="country"
+                    value={address?.country}
+                    placeholder="Inserisci il paese"
+                    onChange={(e) => handleChange("address", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="Notes"
+                  name="notes"
+                  placeholder="Inserisci una nota"
+                  value={notes}
+                  onChange={(e) => handleChange("notes", e.target.value)}
+                  className="min-h-[100px]"
+                />
               </div>
             </CardContent>
 
@@ -168,9 +216,11 @@ const EditProfileScreen = () => {
                 type="button"
                 onClick={() => router.push("/dashboard/profile")}
               >
-                Cancel
+                <Undo2Icon /> Annulla
               </Button>
-              <Button type="submit">Save Changes</Button>
+              <Button type="submit">
+                <UserCheck /> Salva Modifiche
+              </Button>
             </CardFooter>
           </form>
         </Card>

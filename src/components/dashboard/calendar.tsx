@@ -27,6 +27,7 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  isBefore,
   isSameDay,
   isSameMonth,
   parseISO,
@@ -58,7 +59,9 @@ import {
   X
 } from "lucide-react";
 import { JSX, useEffect, useState } from "react";
-import DrawerInput from "../custom/drawer-input";
+import DrawerInput from "@/components/custom/drawer-input";
+import ToastMessage from "@/components/custom/toast.message";
+import DialogModal from "../custom/dialog.modal";
 
 interface Appointment {
   id: string;
@@ -81,6 +84,7 @@ export default function CalendarScreen() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentAppointment, setCurrentAppointment] =
     useState<Appointment | null>(null);
   const [hours, setHoursValue] = useState<number>(new Date().getHours());
@@ -91,7 +95,9 @@ export default function CalendarScreen() {
   const [showAppointment, setShowAppointment] =
     useState<showAppointmentType | null>(null);
   const [mode, setMode] = useState<ModeType>("add");
-
+  const [appointment, setAppointment] = useState<Appointment>(
+    {} as Appointment
+  );
   const today = new Date();
 
   // Load from localStorage
@@ -157,6 +163,7 @@ export default function CalendarScreen() {
   };
 
   const handleSave = () => {
+    // TODO: Save appointment logic
     if (!currentAppointment) return;
     setAppointments((prev) =>
       prev.some((a) => a.id === currentAppointment.id)
@@ -166,10 +173,30 @@ export default function CalendarScreen() {
         : [...prev, currentAppointment]
     );
     setIsDialogOpen(false);
+    ToastMessage({
+      message: "Prenotazione effettuata con successo."
+    });
   };
 
-  const handleDelete = (id: string) => {
-    setAppointments((prev) => prev.filter((a) => a.id !== id));
+  const handleUpdate = () => {
+    // TODO: Update appointment logic
+    setAppointments((prev) =>
+      prev.map((a) =>
+        a.id === currentAppointment?.id ? currentAppointment : a
+      )
+    );
+    setIsDialogOpen(false);
+    ToastMessage({
+      message: "Prenotazione aggiornata con successo."
+    });
+  };
+  const handleDelete = () => {
+    // TODO: Delete appointment logic
+    setAppointments((prev) => prev.filter((a) => a.id !== appointment?.id));
+    setIsModalOpen(!isModalOpen);
+    ToastMessage({
+      message: "Prenotazione cancellata con successo."
+    });
   };
 
   const handleView = (id: string) => {
@@ -213,10 +240,16 @@ export default function CalendarScreen() {
         // appointments for this specific cell date
         const dayAppointments = appointments.filter((a) => a.date === dayKey);
 
+        // 🧠 Disable only strictly past days (before today)
+        const isPastDay = isBefore(cellDate, today);
+        const isToday = isSameDay(cellDate, today);
+
         cells.push(
           <div
             key={dayKey}
-            onClick={() => openDialog(cellDate)} // uses captured cellDate
+            onClick={() => {
+              if (!isPastDay || isToday) openDialog(cellDate); // ✅ only trigger if not past
+            }}
             className={`border rounded-lg p-2 h-32 cursor-pointer flex flex-col justify-between ${
               !isSameMonth(cellDate, monthStart)
                 ? "bg-gray-50 text-gray-400"
@@ -256,7 +289,12 @@ export default function CalendarScreen() {
                       className="text-red-500 ml-2 p-0 h-5"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDelete(a.id);
+                        setIsModalOpen(!isModalOpen);
+                        setAppointment(
+                          appointments.find(
+                            (apt) => apt.id === a.id
+                          ) as Appointment
+                        );
                       }}
                     >
                       <X size={16} />
@@ -321,35 +359,35 @@ export default function CalendarScreen() {
   };
 
   return (
-    <div className="h-screen flex flex-col p-6">
+    <div className="h-screen flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center mb-4 gap-2">
         <div className="flex gap-2">
-          <Button variant="outline" className="w-35" onClick={prevMonth}>
-            <ArrowLeft /> Precedente
+          <Button variant="outline" onClick={prevMonth}>
+            <ArrowLeft /> <span className="hidden sm:inline">Precedente</span>
           </Button>
-          <Button variant="outline" className="w-40" onClick={currentMonthView}>
+          <Button variant="outline" onClick={currentMonthView}>
             <CalendarDays />
-            Mese corrente
+            <span className="hidden sm:inline">Mese corrente</span>
           </Button>{" "}
           {/* ← bouton */}
-          <Button variant="outline" className="w-35" onClick={nextMonth}>
-            Prossimo <ArrowRight />
+          <Button variant="outline" onClick={nextMonth}>
+            <span className="hidden sm:inline">Prossimo</span> <ArrowRight />
           </Button>
         </div>
-        <h1 className="text-2xl font-semibold text-center flex-1">
+        <h1 className="text-1xl sm:text-2xl font-semibold text-center flex-1">
           {capitalizeFirstLetter(
             format(currentMonth, "MMMM yyyy", { locale: it })
           )}
         </h1>
-        <Button variant="default" className="w-40" onClick={() => openDialog()}>
-          <PlusIcon /> Prenotazione
+        <Button variant="default" onClick={() => openDialog()}>
+          <PlusIcon /> <span className="hidden sm:inline">Prenotazione</span>
         </Button>
       </div>
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-2 mt-3 text-center font-medium text-gray-600">
-        {["Lun", "Mar", "Mer", "Gio", "ven", "Sab", "Dom"].map((d) => (
+        {["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"].map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
@@ -362,7 +400,7 @@ export default function CalendarScreen() {
         <DialogContent style={{ padding: "12px" }}>
           <DialogHeader>
             <DialogTitle>
-              {mode === "edit" ? "Modifica Appuntamento" : "Nuovo Appuntamento"}
+              {mode === "edit" ? "Modifica appuntamento" : "Nuovo appuntamento"}
             </DialogTitle>
           </DialogHeader>
 
@@ -412,18 +450,17 @@ export default function CalendarScreen() {
                         mode="single"
                         selected={new Date(currentAppointment.date)}
                         onSelect={handleDateChange}
-                        initialFocus
                         locale={it} // 🇮🇹 Set locale to Italian
                         defaultMonth={
                           new Date(currentAppointment.date) ?? new Date()
-                        } // updates when setDate(today)
+                        }
                         month={currentMonth} // link the month state
                         onMonthChange={setCurrentMonth}
                         captionLayout="dropdown"
                         fromYear={today.getFullYear()}
                         toYear={today.getFullYear() + 10}
                         disabled={{
-                          before: startOfMonth(new Date()) // ⛔ disable all days before current month
+                          before: new Date() // disable past dates
                         }}
                       />
 
@@ -579,16 +616,16 @@ export default function CalendarScreen() {
             <Button
               variant="outline"
               className="w-[100px] mr-3"
-              onClick={() => setIsDialogOpen(false)}
+              onClick={() => setIsDialogOpen(!isDialogOpen)}
             >
-               <Undo2 /> Cancella
+              <Undo2 /> Annulla
             </Button>
             <Button
               disabled={handleDisabled()}
-              onClick={handleSave}
+              onClick={mode === "edit" ? handleUpdate : handleSave}
               className="w-[100px]"
             >
-              <CalendarDays /> Prenota
+              <CalendarDays /> {mode === "add" ? "Prenota" : "Modifica"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -663,6 +700,16 @@ export default function CalendarScreen() {
           </div>
         </div>
       </DrawerInput>
+
+      {/* Modal delete operator */}
+      <DialogModal
+        title="Sei assolutamente sicuro?"
+        description="La prenotazione verrà eliminata definitivamente dal calendario."
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        position="top"
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

@@ -40,6 +40,7 @@ import {
   Pencil,
   PlusIcon,
   Trash,
+  Undo2Icon,
   UserRoundPlus,
   X
 } from "lucide-react";
@@ -57,8 +58,16 @@ const OperatorsScreen = () => {
   }, []);
 
   // Desctructure
-  const { firstName, lastName, email, phone, status, preferred, unqualified, notes } =
-    operator;
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    status,
+    preferred,
+    unqualified,
+    notes
+  } = operator;
 
   // Action cell for each operator
   const actionCell = (operatorId: string) => {
@@ -165,14 +174,13 @@ const OperatorsScreen = () => {
 
           <Button
             variant="default"
-            className="w-40"
             onClick={() => {
               setMode("add");
               setIsDialogOpen(!isDialogOpen);
               setOperator({} as OperatorType);
             }}
           >
-            <PlusIcon /> Operatore
+            <PlusIcon /> <span className="hidden sm:inline">Operatore</span>
           </Button>
         </div>
 
@@ -183,7 +191,7 @@ const OperatorsScreen = () => {
                 <TableRow>
                   <TableHead>Codice</TableHead>
                   <TableHead>Nome e cognome</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Posta elettronica</TableHead>
                   <TableHead>Telefono</TableHead>
                   <TableHead>Operatrice di preferenza</TableHead>
                   <TableHead>Operatrice non abilitata</TableHead>
@@ -207,16 +215,16 @@ const OperatorsScreen = () => {
                     </TableCell>
                     <TableCell className="font-medium">
                       {operator.preferred ? (
-                        <Check className="text-green-600" />
+                        <Check size={20} className="text-green-600" />
                       ) : (
-                        <X className="text-red-600" />
+                        <X size={20} className="text-red-600" />
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
                       {operator.unqualified ? (
-                        <Check className="text-green-600" />
+                        <Check size={20} className="text-green-600" />
                       ) : (
-                        <X className="text-red-600" />
+                        <X size={20} className="text-red-600" />
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
@@ -275,7 +283,7 @@ const OperatorsScreen = () => {
                 </div>
               </div>
               <div>
-                <Label htmlFor="email">Email (Opzionale)</Label>
+                <Label htmlFor="email">Posta elettronica (Opzionale)</Label>
                 <Input
                   type="email"
                   name="email"
@@ -398,8 +406,8 @@ const OperatorsScreen = () => {
                 className="w-[100px] mr-3"
                 onClick={() => setIsDialogOpen(false)}
               >
-                <X />
-                Cancella
+                <Undo2Icon />
+                Annulla
               </Button>
               <Button
                 onClick={mode === "edit" ? handleUpdate : handleSave}

@@ -43,7 +43,7 @@ const ClientsScreen = () => {
                 <TableRow>
                   <TableHead>Codice</TableHead>
                   <TableHead>Nome e Cognome</TableHead>
-                  <TableHead>Email</TableHead>
+                  <TableHead>Posta Elettronica</TableHead>
                   <TableHead>Telefono</TableHead>
                   <TableHead>Whatsapp</TableHead>
                   <TableHead className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const ClientsScreen = () => {
           </div>
           <div>
             <p className="text-sm font-semibold dark:text-muted-foreground">
-              Email
+              Posta Elettronica
             </p>
             <p className="text-lg font-medium">{customer?.email}</p>
           </div>

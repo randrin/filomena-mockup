@@ -44,7 +44,7 @@ const ProfileScreen = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4 gap-2">
           <div>
-            <h1 className="text-2xl font-bold mb-2">My Profile</h1>
+            <h1 className="text-2xl font-bold mb-2">Mio Profilo</h1>
           </div>
         </div>
         <Card className="w-full rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
@@ -68,22 +68,28 @@ const ProfileScreen = () => {
               className="mt-4 md:mt-0"
               onClick={() => router.push("/dashboard/profile/edit")}
             >
-              <Pencil className="h-4 w-4" /> Edit Profile
+              <Pencil className="h-4 w-4" /> Modifica
             </Button>
           </CardHeader>
 
           <CardContent className="px-6 py-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-semibold dark:text-muted-foreground">Email</p>
+                <p className="text-sm font-semibold dark:text-muted-foreground">
+                  Posta Elettronica
+                </p>
                 <p className="text-lg font-medium">{user.email}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold dark:text-muted-foreground">Phone</p>
+                <p className="text-sm font-semibold dark:text-muted-foreground">
+                  Telefono
+                </p>
                 <p className="text-lg font-medium">{user.phone ?? "-"}</p>
               </div>
               <div>
-                <p className="text-sm font-semibold dark:text-muted-foreground">Date of Birth</p>
+                <p className="text-sm font-semibold dark:text-muted-foreground">
+                  Data di Nascita
+                </p>
                 <p className="text-lg font-medium">
                   {user.dateOfBirth
                     ? new Date(user.dateOfBirth).toLocaleDateString("it-IT")
@@ -91,11 +97,15 @@ const ProfileScreen = () => {
                 </p>
               </div>
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold dark:text-muted-foreground">Address</p>
+                <p className="text-sm font-semibold dark:text-muted-foreground">
+                  Indirizzo
+                </p>
                 <p className="text-lg font-medium">{user.address ?? "-"}</p>
               </div>
               <div className="md:col-span-2">
-                <p className="text-sm font-semibold dark:text-muted-foreground">Notes</p>
+                <p className="text-sm font-semibold dark:text-muted-foreground">
+                  Commenti
+                </p>
                 <p className="text-lg font-medium">{user.notes ?? "-"}</p>
               </div>
             </div>
