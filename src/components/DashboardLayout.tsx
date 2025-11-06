@@ -5,7 +5,7 @@ import { Footer } from "./Footer";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex min-h-screen">
+    <div className="lg:flex min-h-screen">
       {/* Sidebar */}
       <Sidebar />
 
